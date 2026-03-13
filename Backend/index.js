@@ -44,20 +44,56 @@ app.get('/users', async (req, res) => {
     res.json(result[0])
 });
 
+const validateData = (userData) => {
+    let errors = [];
+    if (!userData.firstName) {
+        errors.push('กรุณากรอกชื่อ');
+    }
+    if (!userData.lastName) {
+        errors.push('กรุณากรอกนามสกุล');
+    }
+    if (!userData.age) {
+        errors.push('กรุณากรอกอายุ');
+    }
+    if (!userData.gender) {
+        errors.push('กรุณาเลือกเพศ');
+    }
+    if (!userData.interests) {
+        errors.push('กรุณาเลือกความสนใจ');
+    }
+    if (!userData.description) {
+        errors.push('กรุณากรอกคำอธิบาย');
+    }
+    return errors;
+}
+
 //path: = POST /users for add new user
 app.post('/users', async (req, res) => {
     try {
         let user = req.body;
+        const errors = validateData(user);
+        if (errors.length > 0) {
+            throw {
+                message: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+                errors: errors
+            }
+        }
         const results = await conn.query('INSERT INTO users Set ?', user);
+        console.log('results:', results);
         res.json({
-            Message: 'User added successfully',
+            message: 'User added successfully',
             data: results[0]
         });
     } catch (error) {
-        console.log('Error inserting user:', error);
-        res.status(500).json({ Message: 'Error adding user' });
+        const errorMessage = error.message || 'Error adding user';
+        const errors = error.errors || [];
+        console.error('Error inserting user:', error);
+        res.status(500).json({
+            message: errorMessage,
+            errors: errors
+        });
     }
-});
+})
 
 //path: = GET /users/:id for get user by id
 app.get('/users/:id', async (req, res) => {
