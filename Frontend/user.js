@@ -4,6 +4,7 @@ window.onload = async () => {
 }
 
 const loadData = async () => {
+    //axios Library ตามด้วยเส้นapi ช่วยให้เขียนโค้ง่ายขึ้น
     const response = await axios.get(`${BASE_URL}/users`);
     console.log(response.data);
     const userDOM = document.getElementById("user");
@@ -11,8 +12,8 @@ const loadData = async () => {
     for (let i = 0; i < response.data.length; i++) {
         let user = response.data[i];
         htmlData += ` <div>
-        ${user.id} ${user.firstname} ${user.lastname}
-        <button>Edit</button>
+        ${user.id} ${user.firstname} ${user.lastname} ${user.gender}
+        <a href="index.html?id=${user.id}"><button>Edit</button></a>
         <button class='delete' data-id='${user.id}'>Delete</button>
         </div>`
     }
